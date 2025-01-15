@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import os
+from pathlib import Path
 
 from ollama import chat, embed
 from ollama import ChatResponse
@@ -17,27 +19,44 @@ class CVAssistant:
     Use this information from the candidate's CV to answer the user question: {context}. All information in this document may be shared. Do not under any circumstances lie about the candidate.
     """
 
+    embeddings_dir = Path("data/gold")
+
     def __init__(self, model:str, documents:list[str] | None = None):
         self.model = model
         self.documents = documents
 
-    def get_relevant_docs(self, question:str):
-        if self.documents is None:
-            return None
-        
-        return (
+    def embed_documents(self, ) -> None:
+        self.embeddings_dir.mkdir(parents=True, exist_ok=True)
+
+        (
             pd.DataFrame(
                 data=self.documents, columns=["text"]
             )
             .assign(
                 embeddings = lambda df: df["text"].apply(get_embedding, **{"model":self.model}),
-                dot = lambda df: np.dot(list(df["embeddings"].values), get_embedding(question, model=self.model))
                 )
-            .sort_values(
-                by="dot",
-                ascending=False
-                )
+            .to_pickle(self.embeddings_dir / "docs_embeddings.pkl",)
         )
+
+    def get_relevant_docs(self, question:str, num_docs:int = 4):
+        if Path(self.embeddings_dir / "docs_embeddings.pkl").exists():
+            
+            return (
+                pd.read_pickle(
+                    Path(self.embeddings_dir / "docs_embeddings.pkl"),
+                    )
+                .assign(
+                    dot = lambda df: np.dot(list(df["embeddings"].values), get_embedding(question, model=self.model))
+                )
+                .sort_values(
+                    by="dot",
+                    ascending=False
+                )
+                .head(num_docs)
+            )
+
+        self.embed_documents()
+        self.get_relevant_docs(question=question, num_docs=num_docs)
     
     def generate_response(self, question:str):
         docs = self.get_relevant_docs(question=question)
