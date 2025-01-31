@@ -2,3 +2,5 @@ data/
 __pycache__/
 
 cv_llm_workshop.ipynb
+debug_file.py
+.vscode/*
