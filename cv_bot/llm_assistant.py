@@ -1,17 +1,15 @@
 import numpy as np
 import pandas as pd
-import os
 from pathlib import Path
 
 from ollama import chat, embed
-from ollama import ChatResponse
 
-def get_embedding(text, model:str):
-    return embed(model=model, input=text).embeddings[0]
+
+def get_embedding(text, model: str):
+    return embed(model=model, input=text, truncate=False).embeddings[0]
 
 
 class CVAssistant:
-
     system_setup = """You are an assistant that is helping a recruiter to answer questions about a job candidate based on their CV. Always answer in the third person.
     Please make the candidate seem as impressive as possible."""
 
@@ -21,57 +19,68 @@ class CVAssistant:
 
     embeddings_dir = Path("data/gold")
 
-    def __init__(self, model:str, documents:list[str] | None = None):
+    def __init__(
+        self,
+        model: str,
+        embed_model: str = "llama3.2:1b",
+        documents: list[str] | None = None,
+    ):
         self.model = model
+        self.embed_model = embed_model
         self.documents = documents
 
-    def embed_documents(self, ) -> None:
+    def embed_documents(
+        self,
+    ) -> None:
         self.embeddings_dir.mkdir(parents=True, exist_ok=True)
 
         (
-            pd.DataFrame(
-                data=self.documents, columns=["text"]
-            )
+            pd.DataFrame(data=self.documents, columns=["text"])
             .assign(
-                embeddings = lambda df: df["text"].apply(get_embedding, **{"model":self.model}),
-                )
-            .to_pickle(self.embeddings_dir / "docs_embeddings.pkl",)
+                embeddings=lambda df: df["text"].apply(
+                    get_embedding, **{"model": self.embed_model}
+                ),
+            )
+            .to_pickle(
+                self.embeddings_dir / "docs_embeddings.pkl",
+            )
         )
 
-    def get_relevant_docs(self, question:str, num_docs:int = 4):
+    def get_relevant_docs(self, question: str, num_docs: int = 4):
         if Path(self.embeddings_dir / "docs_embeddings.pkl").exists():
-            
             return (
                 pd.read_pickle(
                     Path(self.embeddings_dir / "docs_embeddings.pkl"),
-                    )
+                )
                 .assign(
-                    dot = lambda df: np.dot(list(df["embeddings"].values), get_embedding(question, model=self.model))
+                    dot=lambda df: np.dot(
+                        df["embeddings"].squeeze(),
+                        get_embedding(question, model=self.embed_model),
+                    )
                 )
-                .sort_values(
-                    by="dot",
-                    ascending=False
-                )
+                .sort_values(by="dot", ascending=False)
                 .head(num_docs)
             )
 
         self.embed_documents()
         self.get_relevant_docs(question=question, num_docs=num_docs)
-    
-    def generate_response(self, question:str):
+
+    def generate_response(self, question: str):
         docs = self.get_relevant_docs(question=question)
 
-        return (
-            chat(
-                model=self.model, 
-                messages=[
-                    {"role": "system", "content": self.system_setup},
-                    { 'role': 'assistant', 'content': self.assistant_directives.format(context=docs["text"].iloc[0])},
-                    { 'role': 'user', 'content': question},
-                ]
-            )
+        return chat(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": self.system_setup},
+                {
+                    "role": "assistant",
+                    "content": self.assistant_directives.format(
+                        context=docs["text"].iloc[0]
+                    ),
+                },
+                {"role": "user", "content": question},
+            ],
         )
-    
-    def print_response(self, question:str):
+
+    def print_response(self, question: str):
         print(self.generate_response(question=question).message.content)
-    
