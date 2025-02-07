@@ -3,7 +3,6 @@ import pandas as pd
 from pathlib import Path
 
 from ollama import chat, embed
-import language_tool_python
 
 
 def get_embedding(text, model: str):
@@ -19,7 +18,6 @@ class CVAssistant:
     """
 
     embeddings_dir = Path("data/gold")
-    grammar_corrector = language_tool_python.LanguageTool('en-GB')
 
     def __init__(
         self,
@@ -67,8 +65,25 @@ class CVAssistant:
         self.embed_documents()
         self.get_relevant_docs(question=question, num_docs=num_docs)
 
+    def correct_grammer(self, question: str):
+        return(
+            chat(
+            model=self.model,
+            messages=[
+                {
+                    "role": "system", 
+                    "content": "You are a grammer correcting tool. Correct the spelling and grammer of user inputs. Do not send any other text."
+                    },
+                {
+                    "role": "user",
+                    "content": question
+                    },
+            ],
+        ).message.content
+        )
+    
     def generate_response(self, question: str):
-        corrected_question = self.grammar_corrector.correct(question)
+        corrected_question = self.correct_grammer(question)
         docs = self.get_relevant_docs(question=corrected_question)
 
         return (
@@ -89,6 +104,6 @@ class CVAssistant:
         )
     def print_response(self, question: str):
         prompt, response = self.generate_response(question=question)
-        print(f"User:/n{prompt}/n-----")
-        print(f"Bot:/n{response.message.content}")
+        print(f"User:\n{prompt}\n-----")
+        print(f"Bot:\n{response.message.content}")
 
