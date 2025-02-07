@@ -1,0 +1,1 @@
+from cv_bot.llm_assistant import CVAssistant
