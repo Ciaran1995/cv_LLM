@@ -3,6 +3,7 @@ import pandas as pd
 from pathlib import Path
 
 from ollama import chat, embed
+import language_tool_python
 
 
 def get_embedding(text, model: str):
@@ -18,6 +19,7 @@ class CVAssistant:
     """
 
     embeddings_dir = Path("data/gold")
+    grammar_corrector = language_tool_python.LanguageTool('en-GB')
 
     def __init__(
         self,
@@ -66,9 +68,12 @@ class CVAssistant:
         self.get_relevant_docs(question=question, num_docs=num_docs)
 
     def generate_response(self, question: str):
-        docs = self.get_relevant_docs(question=question)
+        corrected_question = self.grammar_corrector.correct(question)
+        docs = self.get_relevant_docs(question=corrected_question)
 
-        return chat(
+        return (
+            corrected_question,
+            chat(
             model=self.model,
             messages=[
                 {"role": "system", "content": self.system_setup},
@@ -78,9 +83,12 @@ class CVAssistant:
                         context=docs["text"].iloc[0]
                     ),
                 },
-                {"role": "user", "content": question},
+                {"role": "user", "content": corrected_question},
             ],
         )
-
+        )
     def print_response(self, question: str):
-        print(self.generate_response(question=question).message.content)
+        prompt, response = self.generate_response(question=question)
+        print(f"User:/n{prompt}/n-----")
+        print(f"Bot:/n{response.message.content}")
+
