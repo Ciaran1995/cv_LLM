@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "language-tool-python>=2.8.2",
     "numpy>=2.2.2",
     "ollama>=0.4.7",
     "pandas>=2.2.3",
