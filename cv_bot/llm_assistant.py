@@ -68,15 +68,15 @@ class CVAssistant:
     def correct_grammer(self, question: str):
         return(
             chat(
-            model=self.model,
+            model="llama3.1",
             messages=[
                 {
                     "role": "system", 
-                    "content": "You are a grammer correcting tool. Correct the spelling and grammer of user inputs. Do not send any other text."
+                    "content": "You are a professional teacher correcting the grammar of students."
                     },
                 {
                     "role": "user",
-                    "content": question
+                    "content": f"correct the spelling and grammar of the following text: {question}. Do not add any explanation or extra text."
                     },
             ],
         ).message.content
