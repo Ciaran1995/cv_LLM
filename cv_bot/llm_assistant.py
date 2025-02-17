@@ -65,7 +65,7 @@ class CVAssistant:
         self.embed_documents()
         self.get_relevant_docs(question=question, num_docs=num_docs)
 
-    def correct_grammer(self, question: str):
+    def correct_grammar(self, question: str):
         return(
             chat(
             model="llama3.1",
@@ -83,7 +83,7 @@ class CVAssistant:
         )
     
     def generate_response(self, question: str):
-        corrected_question = self.correct_grammer(question)
+        corrected_question = self.correct_grammar(question)
         docs = self.get_relevant_docs(question=corrected_question)
 
         return (
