@@ -4,9 +4,11 @@ This CV Assistant uses Retrieval-Augmented Generation (RAG) to play the role of 
  - Built using `ollama`
  - Simple install via PyPI ```pip install ollama```
  - Download and host LLMs locally, prompting them from your terminal
-   
-![alt text](ollama_terminal_example.png "Run ollama model")
 
+![](ollama_terminal_example.png "Run ollama model")
+
+ - Of course be aware that these will be static, pre-trained models tha might have been trained on data from a few years ago
+![](ollama_terminal_example.png "Run ollama model")
 
 
 ## Installation
