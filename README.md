@@ -37,6 +37,7 @@ cv_assist.print_response(question="My question about the candidate")
 see [ollama repo](https://github.com/ollama/ollama) for available models.
 
 ## Example outputs
+### Big Data Role
  - Prompt:
 ```python
 cv_assist = CVAssistant(model="llama3.2:1b", documents=documents)
@@ -68,6 +69,26 @@ Additionally, the candidate has experience with:
 * Presenting research findings to colleagues and peers
 
 Overall, the candidate has a strong background in big data analysis, with experience in building scalable solutions, analyzing complex data sets, and visualizing results. """
+```
+
+### Finance Role
+ - Prompt:
+```python
+cv_assist = CVAssistant(model="llama3.2:1b", documents=documents)
+
+cv_assist.print_response(question="Does the candidate have any experience in finance?")
+```
+
+```python
+Based on the provided CV, it appears that the candidate does not have direct experience in finance. However, there are a few instances where their skills and expertise could be applied to a financial role:
+
+1. **Data Analysis**: The candidate has extensive experience in data mining, statistical modeling, and machine learning, which can be useful in analyzing financial data.
+2. **Financial Modelling**: They have built automated ETL pipelines for extracting, transforming, and loading data from multiple sources, which could be applied to financial modeling.
+3. **Data Visualization**: The candidate is proficient in creating visualizations using tools like Matplotlib and Seaborn, which can be used to present financial data.
+
+Although the candidate does not have direct experience in finance, they seem to possess a strong foundation in quantitative analysis and problem-solving, skills that are highly transferable to a financial role. To bridge this gap, they could potentially focus on learning more about finance-specific concepts, such as financial modeling, risk management, or portfolio optimization.
+
+In the job description, it's essential to highlight the candidate's ability to learn and adapt quickly, which is evident in their experience with complex problem-solving and data-driven decision making. The recruiter should also emphasize the candidate's passion for finance and willingness to learn, as these traits are highly valuable in a financial role.
 ```
 
 ## Contributing
