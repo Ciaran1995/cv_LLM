@@ -1,7 +1,11 @@
 # CV Assistant
 
-This CV Assistant uses Retrieval-Augmented Generation (RAG) to ply the role of a chatbot assistant for recruiters (or anyone interested) asking questions about a candidate's details, experience and anything else one might expect to find on a CV. 
+This CV Assistant uses Retrieval-Augmented Generation (RAG) to play the role of a chatbot assistant for recruiters (or anyone interested) asking questions about a candidate's details, experience and anything else one might expect to find on a CV. 
  - Built using `ollama`
+ - Simple install via PyPI ```pip install ollama```
+ - Download and host LLMs locally, prompting them from your terminal
+   
+
 
 ## Installation
 
