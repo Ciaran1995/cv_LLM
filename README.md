@@ -8,7 +8,7 @@ This CV Assistant uses Retrieval-Augmented Generation (RAG) to play the role of 
 ![](ollama_terminal_example.png "Run ollama model")
 
  - Of course be aware that these will be static, pre-trained models tha might have been trained on data from a few years ago
-![](ollama_terminal_example.png "Run ollama model")
+![](ollama_prompt_example.png "ollama model response")
 
 
 ## Installation
